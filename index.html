@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<meta name="theme-color" content="#0d0a13">
+<title>Некро Легион</title>
+<meta name="apple-mobile-web-app-title" content="Некро Легион">
+<meta name="application-name" content="Некро Легион">
+<style>
+  /* Full screen on phones; a centred portrait window (9:16) on wider screens. */
+  html, body { margin: 0; height: 100%; background: #0d0a13; overflow: hidden; }
+  #wrap { position: fixed; inset: 0; display: grid; place-items: center; }
+  #unity-canvas { display: block; background: #0d0a13; touch-action: none; outline: none;
+    width: min(100vw, calc(100dvh * 9 / 16)); height: min(100dvh, calc(100vw * 16 / 9)); }
+  @media (max-aspect-ratio: 10/16) { #unity-canvas { width: 100vw; height: 100dvh; } }
+  /* The loader is the splash: the same picture Unity's own splash shows next, so the hand-over
+     doesn't jump. It's sized like the canvas (cover inside the 9:16 window). */
+  #load { position: fixed; inset: 0; display: grid; place-items: center; background: #0d0a13;
+    font: 700 14px/1.4 system-ui, -apple-system, sans-serif; color: #ece4d0; text-align: center; }
+  #splash { position: relative; width: min(100vw, calc(100dvh * 9 / 16)); height: min(100dvh, calc(100vw * 16 / 9));
+    background: #0d0a13; }
+  @media (max-aspect-ratio: 10/16) { #splash { width: 100vw; height: 100dvh; } }
+  #foot { position: absolute; left: 0; right: 0; bottom: 6%; display: grid; justify-items: center; gap: 10px; }
+  #bar { width: 220px; height: 10px; border: 2px solid #45365e; background: #1a1424; }
+  #fill { display: block; height: 100%; width: 0; background: #7cf5c8; transition: width .2s; }
+  #msg, #err { text-shadow: 0 2px 0 #1a1424; }
+  #err { color: #ff8a7a; max-width: 300px; }
+</style>
+</head>
+<body>
+<div id="wrap"><canvas id="unity-canvas" tabindex="-1"></canvas></div>
+<div id="load"><div id="splash"><div id="foot"><div id="bar"><i id="fill"></i></div><span id="msg">Загрузка…</span></div></div></div>
+<script>
+  const s = document.createElement("script");
+  s.src = "Build/WebGL.loader.js";
+  s.onload = () => {
+    createUnityInstance(document.querySelector("#unity-canvas"), {
+      dataUrl: "Build/WebGL.data.unityweb",
+      frameworkUrl: "Build/WebGL.framework.js.unityweb",
+      codeUrl: "Build/WebGL.wasm.unityweb",
+      streamingAssetsUrl: "StreamingAssets",
+      companyName: "White Sharx",
+      productName: "Некро Легион",
+      productVersion: "0.1.0",
+    }, p => { document.getElementById("fill").style.width = Math.round(p * 100) + "%"; })
+      .then(() => document.getElementById("load").remove())
+      .catch(e => { const m = document.getElementById("msg"); m.id = "err"; m.textContent = "Не удалось запустить: " + e; });
+  };
+  document.body.appendChild(s);
+</script>
+</body>
+</html>
